@@ -1,16 +1,88 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { SignTransaction } from './components/SignTransaction'
 import { SendTransaction } from './components/SendTransaction'
 
 export default function Home() {
   const [status, setStatus] = useState('')
+  const [isWalletReady, setIsWalletReady] = useState(false)
 
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
+
+  // 检测钱包扩展是否注入
+  useEffect(() => {
+    const checkWallet = () => {
+      if (typeof window !== 'undefined' && window.ethereum) {
+        const provider = window.ethereum
+        console.log('✅ 钱包已检测到:', {
+          isMetaMask: provider.isMetaMask,
+          isOkxWallet: provider.isOkxWallet,
+          providers: provider.providers?.length || 1
+        })
+        setIsWalletReady(true)
+        setStatus('')
+        return true
+      }
+      return false
+    }
+
+    // 立即检查
+    if (checkWallet()) return
+
+    console.log('🔍 开始检测钱包扩展...')
+
+    // 如果没检测到，监听各种可能的注入事件
+    const handleEthereum = () => {
+      console.log('📡 ethereum#initialized 事件触发')
+      checkWallet()
+    }
+
+    const handleOkxWallet = () => {
+      console.log('📡 okxwallet#initialized 事件触发')
+      checkWallet()
+    }
+
+    const handleLoad = () => {
+      console.log('📡 load 事件触发')
+      checkWallet()
+    }
+
+    window.addEventListener('ethereum#initialized', handleEthereum, { once: true })
+    window.addEventListener('okxwallet#initialized', handleOkxWallet, { once: true })
+    window.addEventListener('load', handleLoad, { once: true })
+
+    // 轮询检测（最多5秒，每100ms检测一次）
+    let attempts = 0
+    const maxAttempts = 50
+    const interval = setInterval(() => {
+      attempts++
+
+      if (checkWallet()) {
+        console.log(`✅ 在第 ${attempts} 次尝试时检测到钱包`)
+        clearInterval(interval)
+      } else if (attempts >= maxAttempts) {
+        console.warn('⚠️ 未检测到钱包扩展')
+        console.log('请确保：')
+        console.log('1. 已安装 OKX Wallet 或 MetaMask 扩展')
+        console.log('2. 扩展已启用')
+        console.log('3. 尝试刷新页面')
+        clearInterval(interval)
+        setStatus('⚠️ 未检测到钱包扩展。请确保已安装 OKX/MetaMask 并刷新页面')
+        setIsWalletReady(true) // 即使未检测到，也允许用户尝试连接
+      }
+    }, 100)
+
+    return () => {
+      window.removeEventListener('ethereum#initialized', handleEthereum)
+      window.removeEventListener('okxwallet#initialized', handleOkxWallet)
+      window.removeEventListener('load', handleLoad)
+      clearInterval(interval)
+    }
+  }, [])
 
   const handleConnect = async () => {
     const injectedConnector = connectors.find(c => c.type === 'injected')
@@ -19,9 +91,9 @@ export default function Home() {
         setStatus('正在连接钱包...')
         await connect({ connector: injectedConnector })
         setStatus('') // 连接成功，清除状态
-      } catch (err: any) {
+      } catch (err) {
         console.error('连接失败:', err)
-        if (err.code === 4001) {
+        if (err && typeof err === 'object' && 'code' in err && err.code === 4001) {
           setStatus('用户拒绝连接')
         } else {
           setStatus('连接失败')
@@ -43,11 +115,25 @@ export default function Home() {
           演示 eth_sendTransaction 和 eth_signTransaction
         </p>
 
+        {/* 钱包检测状态 */}
+        {!isWalletReady && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-xs text-yellow-800 text-center">
+              正在检测钱包扩展...
+            </p>
+          </div>
+        )}
+
         <div className="space-y-4">
           {!isConnected ? (
             <button
               onClick={handleConnect}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              disabled={!isWalletReady}
+              className={`w-full font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg ${
+                isWalletReady
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white hover:shadow-xl transform hover:-translate-y-0.5'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
             >
               连接钱包
             </button>
@@ -66,12 +152,10 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-
-              {/* eth_sendTransaction 功能 */}
-              <SendTransaction />
-
               {/* eth_signTransaction 功能 */}
               <SignTransaction />
+              {/* eth_sendTransaction 功能 */}
+              <SendTransaction />
             </>
           )}
 
