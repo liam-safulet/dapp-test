@@ -31,7 +31,7 @@ export function SignTransaction() {
     console.log('address:', address)
     console.log('recipient:', recipient)
     console.log('amount:', amount)
-    console.log('window.ethereum:', window.ethereum)
+    console.log('window.ethereum 存在:', !!window.ethereum)
 
     if (!address || !window.ethereum) {
       setStatus('请先连接钱包！')
@@ -44,47 +44,28 @@ export function SignTransaction() {
       setStatus('准备交易...')
       setSignedTx('')
 
-      console.log('步骤 1: 获取 gas price 和 nonce')
-      // 获取当前 gas price 和 nonce
-      const gasPrice = await window.ethereum.request({ method: 'eth_gasPrice' })
-      console.log('gasPrice:', gasPrice)
-
-      const nonce = await window.ethereum.request({
-        method: 'eth_getTransactionCount',
-        params: [address, 'latest']
-      })
-      console.log('nonce:', nonce)
-
-      console.log('步骤 2: 计算金额')
       // 将 ETH 金额转为 wei (hex)
       const valueInWei = BigInt(parseFloat(amount) * 1e18)
-      console.log('valueInWei:', valueInWei)
       const valueHex = '0x' + valueInWei.toString(16)
-      console.log('valueHex:', valueHex)
 
-      console.log('步骤 3: 构建交易对象')
-      // 构建交易对象
+      // 构建交易对象（让钱包自动处理 gas、gasPrice、nonce）
       const tx = {
         from: address,
         to: recipient,
         value: valueHex,
-        gas: '0x5208', // 21000 gas for simple ETH transfer
-        gasPrice: gasPrice,
-        nonce: nonce,
       }
 
-      console.log('完整交易对象:', JSON.stringify(tx, null, 2))
+      console.log('准备签名交易:', tx)
       setStatus('请在钱包中签名交易（只签名，不广播）...')
 
-      console.log('步骤 4: 调用 eth_signTransaction')
       // 调用 eth_signTransaction - 只签名不广播！
       const signed = await window.ethereum.request({
         method: 'eth_signTransaction',
         params: [tx]
       })
 
-      console.log('✅ 签名成功:', signed)
-      setSignedTx(signed)
+      console.log('签名成功:', signed)
+      setSignedTx(signed.signedTx)
       setStatus('✅ 交易已签名（未广播）')
     } catch (err: any) {
       console.error('❌ 签名失败:', err)
@@ -163,13 +144,6 @@ export function SignTransaction() {
         <h2 className="text-xl font-bold text-indigo-900 mb-2">
           🔐 eth_signTransaction 演示
         </h2>
-
-        {/* 警告提示 */}
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-xs text-yellow-800">
-            ⚠️ <strong>注意</strong>: MetaMask 等大多数钱包不支持此方法，会返回错误。此功能仅用于演示目的。
-          </p>
-        </div>
 
         <div className="space-y-4">
           {/* 接收地址（固定为自己） */}
