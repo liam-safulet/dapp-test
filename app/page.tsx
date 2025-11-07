@@ -5,6 +5,7 @@ import { useAccount, useConnect, useDisconnect, useWriteContract, useWaitForTran
 import { parseUnits } from 'viem'
 import { mainnet } from 'wagmi/chains'
 import { SignTransaction } from './components/SignTransaction'
+import { SendTransaction } from './components/SendTransaction'
 
 // USDT合约地址（Ethereum主网）
 const USDT_ADDRESS = '0xdac17f958d2ee523a2206206994597c13d831ec7'
@@ -134,6 +135,9 @@ export default function Home() {
               >
                 {isPending || isConfirming ? '处理中...' : '转账 0.1 USDT 给自己'}
               </button>
+
+              {/* eth_sendTransaction 功能 */}
+              <SendTransaction />
 
               {/* eth_signTransaction 功能 */}
               <SignTransaction />

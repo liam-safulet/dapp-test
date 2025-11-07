@@ -28,6 +28,7 @@
       <change beforePath="$PROJECT_DIR$/../btc_debug.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../compare_tx.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../create-real-transaction.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../debug_failing_utxo.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../debug_psbt_signing.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../debug_pubkey.js" beforeDir="false" />
@@ -53,8 +54,20 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "liam-safulet"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:liam-safulet/dapp-test.git",
+    "accountId": "aefdf555-3d39-4722-9463-20071fb67d1f"
+  }
+}]]></component>
   <component name="ProjectColorInfo"><![CDATA[{
   "associatedIndex": 4
 }]]></component>
@@ -93,7 +106,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762483312720</updated>
-      <workItem from="1762483313783" duration="3195000" />
+      <workItem from="1762483313783" duration="4078000" />
     </task>
     <servers />
   </component>
