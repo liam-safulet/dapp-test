@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { SignTransaction } from './components/SignTransaction'
 import { SendTransaction } from './components/SendTransaction'
+import { WalletConnectSignTransaction } from './components/WalletConnectSignTransaction'
 
 export default function Home() {
   const [status, setStatus] = useState('')
@@ -164,6 +165,11 @@ export default function Home() {
               <p className="text-sm text-blue-800">{status}</p>
             </div>
           )}
+        </div>
+
+        {/* WalletConnect 独立模块 */}
+        <div className="mt-8">
+          <WalletConnectSignTransaction />
         </div>
       </div>
     </div>
