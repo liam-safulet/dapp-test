@@ -32,11 +32,6 @@ export function SendTransaction() {
       return
     }
 
-    if (!recipient || !recipient.startsWith('0x')) {
-      setStatus('请输入有效的接收地址！')
-      return
-    }
-
     try {
       setIsLoading(true)
       setStatus('准备交易...')
@@ -187,31 +182,6 @@ export function SendTransaction() {
         </div>
       </div>
 
-      {/* 说明文档 */}
-      <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-        <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-          <span className="text-lg mr-2">📖</span>
-          eth_sendTransaction 说明
-        </h3>
-        <ul className="text-sm text-gray-600 space-y-2">
-          <li className="flex items-start">
-            <span className="mr-2">🔐</span>
-            <span>eth_sendTransaction 会签名交易并立即广播到网络</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">⚡</span>
-            <span>这是最常用的发送交易方式，一步完成签名和广播</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">✅</span>
-            <span>所有主流钱包（MetaMask、Trust Wallet 等）都支持此方法</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">💡</span>
-            <span>返回交易哈希，可用于追踪交易状态</span>
-          </li>
-        </ul>
-      </div>
     </div>
   )
 }

@@ -32,11 +32,6 @@ export function SignTransaction() {
       return
     }
 
-    if (!recipient || !recipient.startsWith('0x')) {
-      setStatus('请输入有效的接收地址！')
-      return
-    }
-
     try {
       setIsLoading(true)
       setStatus('准备交易...')
@@ -229,31 +224,6 @@ export function SignTransaction() {
         </div>
       </div>
 
-      {/* 说明文档 */}
-      <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-        <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-          <span className="text-lg mr-2">📖</span>
-          eth_signTransaction 说明
-        </h3>
-        <ul className="text-sm text-gray-600 space-y-2">
-          <li className="flex items-start">
-            <span className="mr-2">🔐</span>
-            <span>eth_signTransaction 只签名交易，不会立即广播到网络</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">🔄</span>
-            <span>签名后的交易可以稍后通过 eth_sendRawTransaction 广播</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">⚠️</span>
-            <span>大多数钱包（包括 MetaMask）不支持此方法，会返回 -32601 错误</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">💡</span>
-            <span>适用场景：多签钱包、离线签名、后端验证等</span>
-          </li>
-        </ul>
-      </div>
     </div>
   )
 }
