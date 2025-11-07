@@ -28,9 +28,7 @@
       <change beforePath="$PROJECT_DIR$/../btc_debug.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../compare_tx.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../create-real-transaction.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/components/SendTransaction.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/SendTransaction.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/components/SignTransaction.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/SignTransaction.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../debug_failing_utxo.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../debug_psbt_signing.js" beforeDir="false" />
@@ -109,7 +107,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762483312720</updated>
-      <workItem from="1762483313783" duration="4299000" />
+      <workItem from="1762483313783" duration="4521000" />
     </task>
     <servers />
   </component>

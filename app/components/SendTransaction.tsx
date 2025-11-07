@@ -130,7 +130,6 @@ export function SendTransaction() {
           <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-sm font-medium text-gray-700 mb-1">转账金额</p>
             <p className="text-2xl font-bold text-green-600">0.001 ETH</p>
-            <p className="text-xs text-gray-500 mt-1">固定金额，用于演示</p>
           </div>
 
           {/* 方法说明 */}
