@@ -87,10 +87,16 @@ export function SignTransaction() {
       setSignedTx(signed)
       setStatus('✅ 交易已签名（未广播）')
     } catch (err: any) {
-      console.error('签名失败:', err)
+      console.error('❌ 签名失败:', err)
+      console.error('错误详情:', JSON.stringify(err, null, 2))
+
       if (err.code === 4001) {
         setStatus('用户拒绝签名')
-      } else if (err.code === -32601 || err.message?.includes('not support')) {
+      } else if (err.code === -32601) {
+        setStatus('⚠️ 钱包不支持 eth_signTransaction 方法（错误码: -32601）')
+      } else if (err.code === -32603) {
+        setStatus('⚠️ 钱包内部错误：大多数钱包（如 MetaMask）不支持 eth_signTransaction。请尝试使用 eth_sendTransaction 代替。')
+      } else if (err.message?.includes('not support')) {
         setStatus('⚠️ 当前钱包不支持 eth_signTransaction 方法')
       } else {
         setStatus(`签名失败: ${err.message || err.toString()}`)
@@ -154,9 +160,16 @@ export function SignTransaction() {
   return (
     <div className="space-y-4">
       <div className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl">
-        <h2 className="text-xl font-bold text-indigo-900 mb-4">
+        <h2 className="text-xl font-bold text-indigo-900 mb-2">
           🔐 eth_signTransaction 演示
         </h2>
+
+        {/* 警告提示 */}
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-xs text-yellow-800">
+            ⚠️ <strong>注意</strong>: MetaMask 等大多数钱包不支持此方法，会返回错误。此功能仅用于演示目的。
+          </p>
+        </div>
 
         <div className="space-y-4">
           {/* 接收地址（固定为自己） */}
