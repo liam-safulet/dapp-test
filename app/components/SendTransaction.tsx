@@ -15,9 +15,11 @@ export function SendTransaction() {
   const [status, setStatus] = useState('')
   const [txHash, setTxHash] = useState<string>('')
   const [recipient, setRecipient] = useState<string>('')
-  const [amount, setAmount] = useState<string>('0.001')
   const [isLoading, setIsLoading] = useState(false)
   const [hasEthereum, setHasEthereum] = useState(false)
+
+  // 固定发送 0.001 ETH
+  const amount = '0.001'
 
   useEffect(() => {
     setHasEthereum(typeof window !== 'undefined' && !!window.ethereum)
@@ -124,20 +126,11 @@ export function SendTransaction() {
             />
           </div>
 
-          {/* 金额输入 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              转账金额 (ETH)
-            </label>
-            <input
-              type="number"
-              step="0.001"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.001"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              disabled={isLoading}
-            />
+          {/* 转账金额（固定） */}
+          <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">转账金额</p>
+            <p className="text-2xl font-bold text-green-600">0.001 ETH</p>
+            <p className="text-xs text-gray-500 mt-1">固定金额，用于演示</p>
           </div>
 
           {/* 方法说明 */}
@@ -153,10 +146,10 @@ export function SendTransaction() {
           {/* 发送按钮 */}
           <button
             onClick={handleSendTransaction}
-            disabled={isLoading || !recipient || !amount}
+            disabled={isLoading || !recipient}
             className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
           >
-            {isLoading ? '发送中...' : '📤 发送交易（签名并广播）'}
+            {isLoading ? '发送中...' : '📤 发送 0.001 ETH（签名并广播）'}
           </button>
 
           {/* 交易哈希显示 */}
@@ -229,34 +222,6 @@ export function SendTransaction() {
             <span>返回交易哈希，可用于追踪交易状态</span>
           </li>
         </ul>
-      </div>
-
-      {/* 对比说明 */}
-      <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-200">
-        <h3 className="font-semibold text-purple-900 mb-3 flex items-center">
-          <span className="text-lg mr-2">⚖️</span>
-          与 eth_signTransaction 的对比
-        </h3>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="bg-white/70 p-3 rounded-lg">
-            <p className="font-semibold text-green-700 mb-2">eth_sendTransaction</p>
-            <ul className="text-xs text-gray-600 space-y-1">
-              <li>✅ 签名 + 广播（一步完成）</li>
-              <li>✅ 所有钱包都支持</li>
-              <li>✅ 最常用的方式</li>
-              <li>❌ 无法在广播前验证</li>
-            </ul>
-          </div>
-          <div className="bg-white/70 p-3 rounded-lg">
-            <p className="font-semibold text-indigo-700 mb-2">eth_signTransaction</p>
-            <ul className="text-xs text-gray-600 space-y-1">
-              <li>✅ 只签名不广播</li>
-              <li>✅ 可在广播前验证</li>
-              <li>❌ 大多数钱包不支持</li>
-              <li>❌ 需要额外步骤广播</li>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
   )

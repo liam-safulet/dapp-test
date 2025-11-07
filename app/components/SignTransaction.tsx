@@ -15,9 +15,11 @@ export function SignTransaction() {
   const [status, setStatus] = useState('')
   const [signedTx, setSignedTx] = useState<string>('')
   const [recipient, setRecipient] = useState<string>('')
-  const [amount, setAmount] = useState<string>('0.001')
   const [isLoading, setIsLoading] = useState(false)
   const [hasEthereum, setHasEthereum] = useState(false)
+
+  // 固定发送 0.001 ETH
+  const amount = '0.001'
 
   useEffect(() => {
     setHasEthereum(typeof window !== 'undefined' && !!window.ethereum)
@@ -161,20 +163,11 @@ export function SignTransaction() {
             />
           </div>
 
-          {/* 金额输入 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              转账金额 (ETH)
-            </label>
-            <input
-              type="number"
-              step="0.001"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.001"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              disabled={isLoading}
-            />
+          {/* 转账金额（固定） */}
+          <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">转账金额</p>
+            <p className="text-2xl font-bold text-indigo-600">0.001 ETH</p>
+            <p className="text-xs text-gray-500 mt-1">固定金额，用于演示</p>
           </div>
 
           {/* 钱包信息 */}
@@ -190,10 +183,10 @@ export function SignTransaction() {
           {/* 签名按钮 */}
           <button
             onClick={handleSignTransaction}
-            disabled={isLoading || !recipient || !amount}
+            disabled={isLoading || !recipient}
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
           >
-            {isLoading && !signedTx ? '签名中...' : '🔐 签名交易（不广播）'}
+            {isLoading && !signedTx ? '签名中...' : '🔐 签名 0.001 ETH（不广播）'}
           </button>
 
           {/* 已签名交易显示 */}

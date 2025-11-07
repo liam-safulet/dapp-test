@@ -170,35 +170,6 @@ export default function Home() {
             </div>
           )}
         </div>
-
-        <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
-          <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-            <span className="text-lg mr-2">ℹ️</span>
-            使用说明
-          </h3>
-          <ul className="text-sm text-gray-600 space-y-2">
-            <li className="flex items-start">
-              <span className="mr-2">1️⃣</span>
-              <span>点击"连接钱包"连接MetaMask或其他钱包</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">2️⃣</span>
-              <span>点击转账按钮发送0.1 USDT到自己地址</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">⚠️</span>
-              <span>需要足够的ETH支付gas费</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">🌐</span>
-              <span>使用Ethereum主网</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">⚡</span>
-              <span>使用Wagmi v2 + Viem</span>
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   )
