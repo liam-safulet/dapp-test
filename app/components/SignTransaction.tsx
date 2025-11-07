@@ -17,7 +17,7 @@ export function SignTransaction() {
   const [isLoading, setIsLoading] = useState(false)
   const [hasEthereum, setHasEthereum] = useState(false)
 
-  // 固定发送 0.001 ETH
+  // 固定发送 0.001 BNB
   const amount = '0.001'
   // 接收地址直接使用当前连接的地址（给自己转账）
   const recipient = address || ''
@@ -44,15 +44,65 @@ export function SignTransaction() {
       setStatus('准备交易...')
       setSignedTx('')
 
-      // 将 ETH 金额转为 wei (hex)
+      // 强制切换到 BSC 主网
+      const bscChainId = '0x38' // BSC 主网 (56)
+      console.log('切换到 BSC 主网...')
+      setStatus('切换到 BSC 主网...')
+
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: bscChainId }],
+        })
+        console.log('✅ 已切换到 BSC 主网')
+      } catch (switchError: any) {
+        // 如果 BSC 网络不存在，添加它
+        if (switchError.code === 4902) {
+          console.log('BSC 网络不存在，添加中...')
+          setStatus('添加 BSC 网络...')
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: bscChainId,
+                chainName: 'BNB Smart Chain',
+                nativeCurrency: {
+                  name: 'BNB',
+                  symbol: 'BNB',
+                  decimals: 18,
+                },
+                rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                blockExplorerUrls: ['https://bscscan.com'],
+              },
+            ],
+          })
+          console.log('✅ BSC 网络已添加')
+        } else {
+          throw switchError
+        }
+      }
+
+      // 将 BNB 金额转为 wei (hex)
       const valueInWei = BigInt(parseFloat(amount) * 1e18)
       const valueHex = '0x' + valueInWei.toString(16)
 
-      // 构建交易对象（让钱包自动处理 gas、gasPrice、nonce）
+      // 获取账户的 nonce
+      console.log('获取 nonce...')
+      const nonce = await window.ethereum.request({
+        method: 'eth_getTransactionCount',
+        params: [address, 'latest']
+      })
+      console.log('nonce:', nonce)
+
+      // 构建交易对象（固定 BSC 主网参数）
       const tx = {
         from: address,
         to: recipient,
         value: valueHex,
+        gas: '0x5208',         // 21000
+        chainId: bscChainId,   // BSC 主网 (56)
+        gasPrice: '0x2FAF080', // 50000000 wei
+        nonce: nonce,          // 从区块链获取的交易序号
       }
 
       console.log('准备签名交易:', tx)
@@ -156,8 +206,8 @@ export function SignTransaction() {
           {/* 转账金额（固定） */}
           <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
             <p className="text-sm font-medium text-gray-700 mb-1">转账金额</p>
-            <p className="text-2xl font-bold text-indigo-600">0.001 ETH</p>
-            <p className="text-xs text-gray-500 mt-1">固定金额，用于演示</p>
+            <p className="text-2xl font-bold text-indigo-600">0.001 BNB</p>
+            <p className="text-xs text-gray-500 mt-1">固定金额，用于演示（BSC 主网）</p>
           </div>
 
           {/* 钱包信息 */}
@@ -176,7 +226,7 @@ export function SignTransaction() {
             disabled={isLoading || !recipient}
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
           >
-            {isLoading && !signedTx ? '签名中...' : '🔐 签名 0.001 ETH（不广播）'}
+            {isLoading && !signedTx ? '签名中...' : '🔐 签名 0.001 BNB（不广播）'}
           </button>
 
           {/* 已签名交易显示 */}
