@@ -14,12 +14,13 @@ export function SendTransaction() {
   const { address, isConnected } = useAccount()
   const [status, setStatus] = useState('')
   const [txHash, setTxHash] = useState<string>('')
-  const [recipient, setRecipient] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
   const [hasEthereum, setHasEthereum] = useState(false)
 
   // 固定发送 0.001 ETH
   const amount = '0.001'
+  // 接收地址直接使用当前连接的地址（给自己转账）
+  const recipient = address || ''
 
   useEffect(() => {
     setHasEthereum(typeof window !== 'undefined' && !!window.ethereum)
@@ -65,10 +66,6 @@ export function SendTransaction() {
       setTxHash(hash)
       setStatus('✅ 交易已发送到网络，等待确认...')
 
-      // 清空输入
-      setTimeout(() => {
-        setRecipient('')
-      }, 2000)
     } catch (err: any) {
       console.error('发送失败:', err)
       if (err.code === 4001) {
@@ -111,25 +108,18 @@ export function SendTransaction() {
         </h2>
 
         <div className="space-y-4">
-          {/* 接收地址输入 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              接收地址
-            </label>
-            <input
-              type="text"
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              placeholder="0x..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              disabled={isLoading}
-            />
+          {/* 接收地址（固定为自己） */}
+          <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">接收地址</p>
+            <p className="text-sm font-mono text-green-600 break-all">{address}</p>
+            <p className="text-xs text-gray-500 mt-1">给自己转账演示</p>
           </div>
 
           {/* 转账金额（固定） */}
           <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-sm font-medium text-gray-700 mb-1">转账金额</p>
             <p className="text-2xl font-bold text-green-600">0.001 ETH</p>
+            <p className="text-xs text-gray-500 mt-1">固定金额，用于演示</p>
           </div>
 
           {/* 方法说明 */}

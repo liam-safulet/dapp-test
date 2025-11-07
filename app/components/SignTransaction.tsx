@@ -14,12 +14,13 @@ export function SignTransaction() {
   const { address, isConnected } = useAccount()
   const [status, setStatus] = useState('')
   const [signedTx, setSignedTx] = useState<string>('')
-  const [recipient, setRecipient] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
   const [hasEthereum, setHasEthereum] = useState(false)
 
   // 固定发送 0.001 ETH
   const amount = '0.001'
+  // 接收地址直接使用当前连接的地址（给自己转账）
+  const recipient = address || ''
 
   useEffect(() => {
     setHasEthereum(typeof window !== 'undefined' && !!window.ethereum)
@@ -148,19 +149,11 @@ export function SignTransaction() {
         </h2>
 
         <div className="space-y-4">
-          {/* 接收地址输入 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              接收地址
-            </label>
-            <input
-              type="text"
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              placeholder="0x..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              disabled={isLoading}
-            />
+          {/* 接收地址（固定为自己） */}
+          <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">接收地址</p>
+            <p className="text-sm font-mono text-indigo-600 break-all">{address}</p>
+            <p className="text-xs text-gray-500 mt-1">给自己转账演示</p>
           </div>
 
           {/* 转账金额（固定） */}
