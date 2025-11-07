@@ -164,70 +164,30 @@ export function WalletConnectSignTransaction() {
       })
       console.log('nonce:', nonce)
 
-      // 验证地址格式
-      console.log('=== 地址验证 ===')
-      console.log('currentAddress:', currentAddress)
-      console.log('currentAddress 类型:', typeof currentAddress)
-      console.log('currentAddress 长度:', currentAddress.length)
-      console.log('address (state):', address)
-      console.log('地址是否相同:', currentAddress === address)
-
-      // 检查 provider 的会话信息
-      console.log('=== Provider 信息 ===')
-      console.log('provider.session:', provider.session)
-      console.log('provider.accounts:', provider.accounts)
-      console.log('provider.chainId:', provider.chainId)
-
-      // 构建交易对象（包含完整参数）
+      // 构建交易对象（与 SignTransaction.tsx 保持完全一致）
       const tx = {
         from: currentAddress,  // 发送地址
         to: currentAddress,    // 给自己转账
         value: valueHex,
         gas: '0x5208',         // 21000
+        chainId: bscChainId,   // BSC 主网 (56)
         gasPrice: '0x2FAF080', // 50000000 wei
         nonce: nonce,          // 从区块链获取的交易序号
-        data: '0x',            // 空数据
       }
 
       console.log('准备签名交易:', tx)
       console.log('交易对象完整内容:', JSON.stringify(tx, null, 2))
       setStatus('请在钱包中签名交易（只签名，不广播）...')
 
-      // 尝试方案1：包含 from 字段
-      console.log('=== 尝试签名（包含 from） ===')
-      try {
-        const signed = await provider.request({
-          method: 'eth_signTransaction',
-          params: [tx]
-        })
-        console.log('✅ 签名成功（包含 from）:', signed)
-        setSignedTx(signed.signedTx || signed)
-        setStatus('✅ 交易已签名（未广播）')
-        return
-      } catch (err1: any) {
-        console.log('❌ 包含 from 字段失败:', err1)
+      // 调用 eth_signTransaction - 只签名不广播！
+      const signed = await provider.request({
+        method: 'eth_signTransaction',
+        params: [tx]
+      })
 
-        // 尝试方案2：不包含 from 字段
-        console.log('=== 尝试签名（不包含 from） ===')
-        const txWithoutFrom = {
-          to: currentAddress,
-          value: valueHex,
-          gas: '0x5208',
-          gasPrice: '0x2FAF080',
-          nonce: nonce,
-          data: '0x',
-        }
-        console.log('交易对象（无 from）:', JSON.stringify(txWithoutFrom, null, 2))
-
-        const signed2 = await provider.request({
-          method: 'eth_signTransaction',
-          params: [txWithoutFrom]
-        })
-        console.log('✅ 签名成功（不包含 from）:', signed2)
-        setSignedTx(signed2.signedTx || signed2)
-        setStatus('✅ 交易已签名（未广播）')
-        return
-      }
+      console.log('✅ 签名成功:', signed)
+      setSignedTx(signed.signedTx || signed)
+      setStatus('✅ 交易已签名（未广播）')
     } catch (err: any) {
       console.error('❌ 签名失败:', err)
       console.error('错误详情:', JSON.stringify(err, null, 2))
