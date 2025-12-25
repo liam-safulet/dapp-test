@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { SignTransaction } from './components/SignTransaction'
 import { SendTransaction } from './components/SendTransaction'
@@ -9,6 +9,10 @@ import { WalletConnectSignTransaction } from './components/WalletConnectSignTran
 export default function Home() {
   const [status, setStatus] = useState('')
   const [isWalletReady, setIsWalletReady] = useState(false)
+  const [clipboardText, setClipboardText] = useState('')
+  const [isCameraOn, setIsCameraOn] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const streamRef = useRef<MediaStream | null>(null)
 
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
@@ -105,6 +109,46 @@ export default function Home() {
     }
   }
 
+  // 调用摄像头
+  const handleCamera = async () => {
+    if (isCameraOn) {
+      // 关闭摄像头
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop())
+        streamRef.current = null
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null
+      }
+      setIsCameraOn(false)
+    } else {
+      // 打开摄像头
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+        streamRef.current = stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+        }
+        setIsCameraOn(true)
+      } catch (err) {
+        console.error('摄像头访问失败:', err)
+        setStatus('无法访问摄像头，请检查权限')
+        setTimeout(() => setStatus(''), 3000)
+      }
+    }
+  }
+
+  // 读取剪贴板
+  const handleReadClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText()
+      setClipboardText(text || '(剪贴板为空)')
+    } catch (err) {
+      console.error('读取剪贴板失败:', err)
+      setStatus('无法读取剪贴板，请检查权限')
+      setTimeout(() => setStatus(''), 3000)
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
@@ -165,6 +209,52 @@ export default function Home() {
               <p className="text-sm text-blue-800">{status}</p>
             </div>
           )}
+        </div>
+
+        {/* 摄像头和剪贴板功能 */}
+        <div className="mt-8 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-700 border-b pb-2">设备功能测试</h2>
+
+          {/* 摄像头按钮和预览 */}
+          <div className="space-y-2">
+            <button
+              onClick={handleCamera}
+              className={`w-full font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-md ${
+                isCameraOn
+                  ? 'bg-red-500 hover:bg-red-600 text-white'
+                  : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white'
+              }`}
+            >
+              {isCameraOn ? '关闭摄像头' : '打开摄像头'}
+            </button>
+            {isCameraOn && (
+              <div className="rounded-xl overflow-hidden border-2 border-green-200">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* 剪贴板按钮和显示 */}
+          <div className="space-y-2">
+            <button
+              onClick={handleReadClipboard}
+              className="w-full font-semibold py-3 px-6 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white transition-all duration-200 shadow-md"
+            >
+              读取剪贴板
+            </button>
+            {clipboardText && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <p className="text-xs text-amber-600 mb-1">剪贴板内容：</p>
+                <p className="text-sm text-gray-800 break-all whitespace-pre-wrap">{clipboardText}</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* WalletConnect 独立模块 */}
