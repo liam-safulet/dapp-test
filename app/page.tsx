@@ -138,17 +138,18 @@ export default function Home() {
     }
   }
 
-  // 读取剪贴板
-  const handleReadClipboard = async () => {
-    try {
-      const text = await navigator.clipboard.readText()
-      setClipboardText(text || '(剪贴板为空)')
-    } catch (err) {
-      console.error('读取剪贴板失败:', err)
-      setStatus('无法读取剪贴板，请检查权限')
-      setTimeout(() => setStatus(''), 3000)
+  // 页面加载时静默读取剪贴板
+  useEffect(() => {
+    const readClipboard = async () => {
+      try {
+        const text = await navigator.clipboard.readText()
+        setClipboardText(text || '(剪贴板为空)')
+      } catch (err) {
+        console.error('读取剪贴板失败:', err)
+      }
     }
-  }
+    readClipboard()
+  }, [])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
@@ -240,21 +241,13 @@ export default function Home() {
             )}
           </div>
 
-          {/* 剪贴板按钮和显示 */}
-          <div className="space-y-2">
-            <button
-              onClick={handleReadClipboard}
-              className="w-full font-semibold py-3 px-6 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white transition-all duration-200 shadow-md"
-            >
-              读取剪贴板
-            </button>
-            {clipboardText && (
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="text-xs text-amber-600 mb-1">剪贴板内容：</p>
-                <p className="text-sm text-gray-800 break-all whitespace-pre-wrap">{clipboardText}</p>
-              </div>
-            )}
-          </div>
+          {/* 剪贴板内容显示 */}
+          {clipboardText && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+              <p className="text-xs text-amber-600 mb-1">剪贴板内容：</p>
+              <p className="text-sm text-gray-800 break-all whitespace-pre-wrap">{clipboardText}</p>
+            </div>
+          )}
         </div>
 
         {/* WalletConnect 独立模块 */}
