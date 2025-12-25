@@ -10,6 +10,7 @@ export default function Home() {
   const [status, setStatus] = useState('')
   const [isWalletReady, setIsWalletReady] = useState(false)
   const [clipboardText, setClipboardText] = useState('')
+  const [clipboardError, setClipboardError] = useState('')
   const [isCameraOn, setIsCameraOn] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -126,9 +127,6 @@ export default function Home() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true })
         streamRef.current = stream
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-        }
         setIsCameraOn(true)
       } catch (err) {
         console.error('摄像头访问失败:', err)
@@ -138,14 +136,24 @@ export default function Home() {
     }
   }
 
+  // 当 isCameraOn 变化且 video 元素存在时，绑定 stream
+  useEffect(() => {
+    if (isCameraOn && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current
+    }
+  }, [isCameraOn])
+
   // 页面加载时静默读取剪贴板
   useEffect(() => {
     const readClipboard = async () => {
       try {
         const text = await navigator.clipboard.readText()
         setClipboardText(text || '(剪贴板为空)')
-      } catch (err) {
+        setClipboardError('')
+      } catch (err: unknown) {
         console.error('读取剪贴板失败:', err)
+        const errorMessage = err instanceof Error ? err.message : String(err)
+        setClipboardError(`读取剪贴板失败: ${errorMessage}`)
       }
     }
     readClipboard()
@@ -246,6 +254,12 @@ export default function Home() {
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
               <p className="text-xs text-amber-600 mb-1">剪贴板内容：</p>
               <p className="text-sm text-gray-800 break-all whitespace-pre-wrap">{clipboardText}</p>
+            </div>
+          )}
+          {clipboardError && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+              <p className="text-xs text-red-600 mb-1">剪贴板错误：</p>
+              <p className="text-sm text-red-800 break-all whitespace-pre-wrap">{clipboardError}</p>
             </div>
           )}
         </div>
