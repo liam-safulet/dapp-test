@@ -4,13 +4,12 @@ import { useState, useEffect, useRef } from 'react'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { SignTransaction } from './components/SignTransaction'
 import { SendTransaction } from './components/SendTransaction'
+import { DelayedSendBNB } from './components/DelayedSendBNB'
 import { WalletConnectSignTransaction } from './components/WalletConnectSignTransaction'
 
 export default function Home() {
   const [status, setStatus] = useState('')
   const [isWalletReady, setIsWalletReady] = useState(false)
-  const [clipboardText, setClipboardText] = useState('')
-  const [clipboardError, setClipboardError] = useState('')
   const [isCameraOn, setIsCameraOn] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -143,22 +142,6 @@ export default function Home() {
     }
   }, [isCameraOn])
 
-  // 页面加载时静默读取剪贴板
-  useEffect(() => {
-    const readClipboard = async () => {
-      try {
-        const text = await navigator.clipboard.readText()
-        setClipboardText(text || '(剪贴板为空)')
-        setClipboardError('')
-      } catch (err: unknown) {
-        console.error('读取剪贴板失败:', err)
-        const errorMessage = err instanceof Error ? err.message : String(err)
-        setClipboardError(`读取剪贴板失败: ${errorMessage}`)
-      }
-    }
-    readClipboard()
-  }, [])
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl">
@@ -210,6 +193,8 @@ export default function Home() {
               <SignTransaction />
               {/* eth_sendTransaction 功能 */}
               <SendTransaction />
+              {/* 延迟发送 BNB (BSC) */}
+              <DelayedSendBNB />
             </>
           )}
 
@@ -249,19 +234,6 @@ export default function Home() {
             )}
           </div>
 
-          {/* 剪贴板内容显示 */}
-          {clipboardText && (
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-              <p className="text-xs text-amber-600 mb-1">剪贴板内容：</p>
-              <p className="text-sm text-gray-800 break-all whitespace-pre-wrap">{clipboardText}</p>
-            </div>
-          )}
-          {clipboardError && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
-              <p className="text-xs text-red-600 mb-1">剪贴板错误：</p>
-              <p className="text-sm text-red-800 break-all whitespace-pre-wrap">{clipboardError}</p>
-            </div>
-          )}
         </div>
 
         {/* WalletConnect 独立模块 */}
