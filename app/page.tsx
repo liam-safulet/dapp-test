@@ -205,6 +205,77 @@ export default function Home() {
           )}
         </div>
 
+        {/* 网络切换功能 */}
+        <div className="mt-8 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-700 border-b pb-2">网络操作</h2>
+
+          {/* 添加 Katana 网络 */}
+          <button
+            onClick={async () => {
+              if (!window.ethereum) {
+                setStatus('请先连接钱包')
+                return
+              }
+              try {
+                setStatus('正在添加 Katana 网络...')
+                await window.ethereum.request({
+                  method: 'wallet_addEthereumChain',
+                  params: [{
+                    chainId: '0xb67d2', // 747474
+                    chainName: 'Katana',
+                    nativeCurrency: {
+                      name: 'ETH',
+                      symbol: 'ETH',
+                      decimals: 18
+                    },
+                    rpcUrls: ['https://rpc.katana.network'],
+                    blockExplorerUrls: []
+                  }]
+                })
+                setStatus('Katana 网络添加成功!')
+              } catch (err: any) {
+                console.error('添加网络失败:', err)
+                setStatus(`添加失败: ${err.message || err}`)
+              }
+              setTimeout(() => setStatus(''), 3000)
+            }}
+            className="w-full font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-md bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white"
+          >
+            添加 Katana 网络 (747474)
+          </button>
+
+          {/* 切换到 88888 网络 */}
+          <button
+            onClick={async () => {
+              if (!window.ethereum) {
+                setStatus('请先连接钱包')
+                return
+              }
+              try {
+                setStatus('正在切换到 88888 网络...')
+                await window.ethereum.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{
+                    chainId: '0x15b38' // 88888
+                  }]
+                })
+                setStatus('切换成功!')
+              } catch (err: any) {
+                console.error('切换网络失败:', err)
+                if (err.code === 4902) {
+                  setStatus('该网络未添加，请先添加网络')
+                } else {
+                  setStatus(`切换失败: ${err.message || err}`)
+                }
+              }
+              setTimeout(() => setStatus(''), 3000)
+            }}
+            className="w-full font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-md bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+          >
+            切换到 88888 网络
+          </button>
+        </div>
+
         {/* 摄像头和剪贴板功能 */}
         <div className="mt-8 space-y-4">
           <h2 className="text-lg font-semibold text-gray-700 border-b pb-2">设备功能测试</h2>
